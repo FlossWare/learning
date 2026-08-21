@@ -13,6 +13,7 @@ SimpleLearningExtractor -- pattern-based feedback detection, in-memory
 
 from __future__ import annotations
 
+import asyncio
 import re
 import uuid
 from datetime import datetime, timezone
@@ -56,6 +57,7 @@ class SimpleLearningExtractor:
         self._matcher = FeedbackPatternMatcher()
         self._experiences: dict[str, dict[str, Any]] = {}
         self._strategies: dict[str, dict[str, Any]] = {}
+        self._lock = asyncio.Lock()
 
     async def detect_feedback(
         self, messages: list[ChatMessage]
@@ -77,12 +79,13 @@ class SimpleLearningExtractor:
     ) -> str:
         """Persist a task/outcome pair and return its UUID."""
         experience_id = str(uuid.uuid4())
-        self._experiences[experience_id] = {
-            "task": task,
-            "outcome": outcome,
-            "context": context or {},
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
+        async with self._lock:
+            self._experiences[experience_id] = {
+                "task": task,
+                "outcome": outcome,
+                "context": context or {},
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
         return experience_id
 
     async def extract_learnings(self, experience_id: str) -> list[Learning]:
@@ -135,16 +138,17 @@ class SimpleLearningExtractor:
         - failure (reward < 0.5):  beta  += 1
         """
         _ = outcome
-        state = self._strategies.setdefault(
-            strategy,
-            {"total_trials": 0, "total_reward": 0.0, "alpha": 1.0, "beta": 1.0},
-        )
-        state["total_trials"] += 1
-        state["total_reward"] += reward
-        if reward >= 0.5:
-            state["alpha"] += 1.0
-        else:
-            state["beta"] += 1.0
+        async with self._lock:
+            state = self._strategies.setdefault(
+                strategy,
+                {"total_trials": 0, "total_reward": 0.0, "alpha": 1.0, "beta": 1.0},
+            )
+            state["total_trials"] += 1
+            state["total_reward"] += reward
+            if reward >= 0.5:
+                state["alpha"] += 1.0
+            else:
+                state["beta"] += 1.0
 
     @property
     def experiences(self) -> dict[str, dict[str, Any]]:
