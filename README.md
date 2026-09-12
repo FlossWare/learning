@@ -1,6 +1,6 @@
 # learning-ai
 
-**Historical learning utilities being consolidated into Loom, Knowledge, Evaluation, and Strategy.**
+**Historical learning utilities consolidated into Loom, Knowledge, Evaluation, and Strategy.**
 
 The original package combined feedback detection, experience recording, learning extraction, and Thompson Sampling reward tracking. Those concerns now have clearer architectural homes.
 
@@ -8,17 +8,19 @@ The original package combined feedback detection, experience recording, learning
 
 | Former capability | Canonical destination |
 |---|---|
-| User feedback / correction detection | Loom interaction observations |
-| Experience/task recording | Loom evidence and checkpoint/run history |
+| User feedback / correction detection | `evaluation` (`evaluation_ai/feedback.py`) |
+| Experience/task recording | Loom evidence and checkpoint/run history + `storage` |
 | Learning extraction | `knowledge` and Loom Knowledge APIs |
-| Strategy rewards | `evaluation` + strategy implementation state |
+| Strategy rewards | `strategy` |
 | Thompson Sampling state | `strategy` |
 
 The important distinction is that **Knowledge is durable understanding**, not a raw conversation or experience log. Interaction observations, evidence, and evaluation are inputs from which Knowledge may be derived.
 
 ## Status
 
-No new architectural capabilities should be added here. Reusable implementation pieces should be migrated to their canonical destinations and this repository can then be archived as historical material.
+**Retirement candidate.** The reusable conversation-feedback matcher has been extracted to `evaluation`. The remaining historical classes intentionally have not been ported because their responsibilities are already owned by canonical Loom capabilities.
+
+No new architectural capabilities should be added here. Preserve this repository only as historical source and archive it when convenient.
 
 Loom's interaction loop is:
 
