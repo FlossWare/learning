@@ -2,7 +2,7 @@
 
 **Reusable outcome-driven learning capabilities for FlossWare.**
 
-This repository is intended to define contracts and implementations for using observed outcomes and feedback to improve future decisions.
+This repository defines contracts and implementations for using observed outcomes and feedback to improve future decisions.
 
 ## Scope
 
@@ -17,11 +17,11 @@ This repository is intended to define contracts and implementations for using ob
 
 - `evaluation` judges results against intended outcomes; `learning` uses outcomes to update future behavior.
 - `strategy` owns reusable decision strategies, including bandit strategies.
-- `optimizer` owns reusable genetic/evolutionary optimization algorithms.
+- `optimization` owns reusable genetic and evolutionary optimization algorithms.
 - `loom` and `loom-ai` own execution contracts and orchestration semantics.
 
 Learning must not override security policy, authorization, budget limits, or other hard constraints. Learned recommendations remain subordinate to those constraints.
 
 ## Status
 
-Repository scaffold. Keep algorithm implementations separate from outcome/evidence contracts where doing so enables independent reuse.
+Repository scaffold. Keep algorithm implementations separate from outcome/evidence contracts where doing so enables independent reuse. Do not describe planned APIs as stable until their contracts, behavior, and tests exist.
